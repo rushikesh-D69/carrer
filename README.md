@@ -28,6 +28,7 @@ Supabase is hosted for you — no self-hosted DB.
 1. Create a project at [supabase.com](https://supabase.com).
 2. In **SQL Editor**, run in order:
    - `supabase/migrations/001_schema.sql`
+   - `supabase/migrations/002_production_hardening.sql`
    - `supabase/seed.sql`
 3. Copy **Project URL** and **anon public** key from **Settings → API**.
 

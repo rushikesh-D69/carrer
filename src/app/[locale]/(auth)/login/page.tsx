@@ -37,7 +37,7 @@ export default function LoginPage() {
       }
     } catch (err) {
       toast.error('An unexpected error occurred during Google sign-in')
-      console.error(err)
+      if (process.env.NODE_ENV === 'development') console.error(err)
     } finally {
       setIsLoading(false)
     }
@@ -46,7 +46,7 @@ export default function LoginPage() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!email || !password) {
-      toast.error(t('contact.error') || 'Please fill in all fields')
+      toast.error('Please enter your email and password')
       return
     }
 
@@ -66,7 +66,7 @@ export default function LoginPage() {
       }
     } catch (err) {
       toast.error('An unexpected error occurred')
-      console.error(err)
+      if (process.env.NODE_ENV === 'development') console.error(err)
     } finally {
       setIsLoading(false)
     }

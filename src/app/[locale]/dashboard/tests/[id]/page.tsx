@@ -4,9 +4,11 @@ import { useState, useEffect, useRef } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useTranslations, useLocale } from 'next-intl'
 import { createClient } from '@/lib/supabase/client'
+import { fetchTestQuestions, submitTestAttempt } from '@/app/actions/tests'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Clock, AlertTriangle, ArrowRight, ArrowLeft, Send, CheckCircle2, ChevronRight, Check } from 'lucide-react'
 import { toast } from 'sonner'
+import { logError } from '@/lib/logger'
 
 interface Question {
   id: string
@@ -15,9 +17,12 @@ interface Question {
   option_b: string
   option_c: string
   option_d: string
-  correct_answer: string
+  correct_answer?: string
   explanation?: string
 }
+
+const UUID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 
 export default function TestEnginePage() {
   const t = useTranslations()
@@ -136,23 +141,15 @@ export default function TestEnginePage() {
           setTest(dbTest)
           setTimeRemaining(dbTest.duration * 60)
 
-          // Fetch questions through pivot
-          const { data: pivotData } = await supabase
-            .from('test_questions')
-            .select('question_id, question_bank(*)')
-            .eq('test_id', testId)
-            .order('sort_order', { ascending: true })
-
-          if (pivotData && pivotData.length > 0) {
-            questionsData = pivotData.map((item: any) => ({
-              id: item.question_bank.id,
-              question_text: item.question_bank.question_text,
-              option_a: item.question_bank.option_a,
-              option_b: item.question_bank.option_b,
-              option_c: item.question_bank.option_c,
-              option_d: item.question_bank.option_d,
-              correct_answer: item.question_bank.correct_answer,
-              explanation: item.question_bank.explanation,
+          const { questions: rpcQuestions } = await fetchTestQuestions(testId)
+          if (rpcQuestions.length > 0) {
+            questionsData = rpcQuestions.map((q) => ({
+              id: q.id,
+              question_text: q.question_text,
+              option_a: q.option_a,
+              option_b: q.option_b,
+              option_c: q.option_c,
+              option_d: q.option_d,
             }))
           }
         }
@@ -174,7 +171,7 @@ export default function TestEnginePage() {
 
         setQuestions(questionsData)
       } catch (err) {
-        console.error('Error initializing test engine:', err)
+        logError('testEngine.init', err)
         setTest({ id: testId, title: 'Ramanujonomics Practice Exam Hub', duration: 15, total_marks: 30 })
         setTimeRemaining(15 * 60)
         setQuestions(defaultMockQuestions)
@@ -240,7 +237,7 @@ export default function TestEnginePage() {
       const selected = answers[q.id]
       if (!selected) {
         skippedCount++
-      } else if (selected === q.correct_answer) {
+      } else if (q.correct_answer && selected === q.correct_answer) {
         correctCount++
         score += marksPerQ
       } else {
@@ -273,45 +270,52 @@ export default function TestEnginePage() {
     }
 
     setIsSubmitting(true)
-    const results = calculateResults()
+    const timeTaken = test.duration * 60 - timeRemaining
+    const isDbTest = UUID_RE.test(test.id)
 
     try {
-      const { data: { user } } = await supabase.auth.getUser()
-
-      if (user) {
-        // Record Attempt in database
-        const { error } = await supabase.from('test_attempts').insert({
-          user_id: user.id,
-          test_id: test.id,
-          answers: answers,
-          score: results.score,
-          percentage: results.percentage,
-          time_taken: results.timeTaken,
-          correct_count: results.correctCount,
-          wrong_count: results.wrongCount,
-          skipped_count: results.skippedCount,
-          is_completed: true,
-        } as any)
-
-        if (error) {
-          console.error('Error saving attempt:', error)
-        }
+      let results: {
+        score: number
+        percentage: number
+        correctCount: number
+        wrongCount: number
+        skippedCount: number
+        timeTaken: number
       }
 
-      // Store results in localStorage to pass to result route (essential for sandbox fallback)
-      localStorage.setItem(`test_result_${test.id}`, JSON.stringify({
-        testTitle: test.title,
-        results,
-        answers,
-        questions,
-      }))
+      if (isDbTest) {
+        const submitted = await submitTestAttempt(test.id, answers, timeTaken)
+        if (!submitted.success) {
+          toast.error(submitted.error)
+          return
+        }
+        results = {
+          score: submitted.score,
+          percentage: submitted.percentage,
+          correctCount: submitted.correct_count,
+          wrongCount: submitted.wrong_count,
+          skippedCount: submitted.skipped_count,
+          timeTaken,
+        }
+      } else {
+        results = calculateResults()
+      }
+
+      localStorage.setItem(
+        `test_result_${test.id}`,
+        JSON.stringify({
+          testTitle: test.title,
+          results,
+          answers,
+          questions: questions.map(({ correct_answer: _, ...q }) => q),
+        })
+      )
 
       toast.success('Exam submitted successfully!')
       router.push(`/${locale}/dashboard/tests/${test.id}/result`)
     } catch (err) {
-      console.error('Error submitting test:', err)
-      toast.error('Failed to submit results. Redirecting to backup dashboard.')
-      router.push(`/${locale}/dashboard`)
+      logError('testEngine.submit', err)
+      toast.error('Failed to submit results. Please try again.')
     } finally {
       setIsSubmitting(false)
     }

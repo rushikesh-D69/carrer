@@ -1,6 +1,7 @@
 import { createServerClient } from '@supabase/ssr'
+import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 import { cookies } from 'next/headers'
-import { Database } from '@/types/database'
+import type { Database } from '@/types/database'
 
 export async function createClient() {
   const cookieStore = await cookies()
@@ -19,7 +20,7 @@ export async function createClient() {
               cookieStore.set(name, value, options)
             )
           } catch {
-            // Server component - cookies are read-only, ignore
+            // Server component — cookies read-only
           }
         },
       },
@@ -28,28 +29,15 @@ export async function createClient() {
 }
 
 /**
- * Service role client — bypasses RLS. Server-only; never import in client components.
- * Requires SUPABASE_SERVICE_ROLE_KEY (no NEXT_PUBLIC_ prefix).
+ * Service role — bypasses RLS. Server-only; never import in client components.
  */
-export async function createAdminClient() {
-  const cookieStore = await cookies()
-
-  return createServerClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll()
-        },
-        setAll(cookiesToSet) {
-          try {
-            cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options)
-            )
-          } catch {}
-        },
-      },
-    }
-  )
+export function createAdminClient() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY
+  if (!url || !key) {
+    throw new Error('Missing Supabase admin credentials')
+  }
+  return createSupabaseClient<Database>(url, key, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  })
 }

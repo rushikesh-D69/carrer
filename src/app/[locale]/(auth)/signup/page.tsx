@@ -37,7 +37,7 @@ export default function SignupPage() {
       }
     } catch (err) {
       toast.error('An unexpected error occurred during Google sign-in')
-      console.error(err)
+      if (process.env.NODE_ENV === 'development') console.error(err)
     } finally {
       setIsLoading(false)
     }
@@ -56,8 +56,12 @@ export default function SignupPage() {
       return
     }
 
-    if (password.length < 6) {
-      toast.error('Password must be at least 6 characters')
+    if (password.length < 8) {
+      toast.error('Password must be at least 8 characters')
+      return
+    }
+    if (!/[A-Za-z]/.test(password) || !/[0-9]/.test(password)) {
+      toast.error('Password must include a letter and a number')
       return
     }
 
@@ -89,7 +93,7 @@ export default function SignupPage() {
       }
     } catch (err) {
       toast.error('An unexpected error occurred')
-      console.error(err)
+      if (process.env.NODE_ENV === 'development') console.error(err)
     } finally {
       setIsLoading(false)
     }

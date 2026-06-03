@@ -3,8 +3,8 @@
 import { useState, use } from 'react'
 import { useTranslations } from 'next-intl'
 import { Mail, Phone, MapPin, Send, MessageSquare, User, AlertCircle, CheckCircle2 } from 'lucide-react'
-import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
+import { submitContactLead } from '@/app/actions/contact'
 
 interface PageProps {
   params: Promise<{ locale: string }>
@@ -22,6 +22,7 @@ export default function ContactPage({ params }: PageProps) {
     phone: '',
     career_interest: '',
     message: '',
+    website: '',
   })
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -36,20 +37,18 @@ export default function ContactPage({ params }: PageProps) {
     setLoading(true)
 
     try {
-      const supabase = createClient() as any
-      const { error } = await supabase.from('leads').insert({
+      const result = await submitContactLead({
         name: formData.name,
         email: formData.email,
-        phone: formData.phone || null,
-        career_interest: formData.career_interest || null,
+        phone: formData.phone,
+        career_interest: formData.career_interest,
         message: formData.message,
-        source: 'contact_form',
-        status: 'new',
-        metadata: { page_url: window.location.href, user_agent: navigator.userAgent }
+        honeypot: formData.website,
       })
 
-      if (error) {
-        throw error
+      if (!result.success) {
+        toast.error(result.error)
+        return
       }
 
       setSuccess(true)
@@ -60,8 +59,9 @@ export default function ContactPage({ params }: PageProps) {
         phone: '',
         career_interest: '',
         message: '',
+        website: '',
       })
-    } catch (err) {
+    } catch {
       toast.error(t('contact.error'))
     } finally {
       setLoading(false)
@@ -166,6 +166,16 @@ export default function ContactPage({ params }: PageProps) {
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-4">
+                <input
+                  type="text"
+                  name="website"
+                  value={formData.website}
+                  onChange={handleChange}
+                  tabIndex={-1}
+                  autoComplete="off"
+                  className="hidden"
+                  aria-hidden
+                />
                 <h3 className="font-heading font-extrabold text-xl text-slate-900 border-b border-slate-100 pb-3 mb-4">
                   Send a Direct Message
                 </h3>
@@ -260,6 +270,8 @@ export default function ContactPage({ params }: PageProps) {
                     placeholder="Enter your detailed query..."
                     className="input-base text-sm"
                     rows={5}
+                    minLength={10}
+                    maxLength={5000}
                     required
                   />
                 </div>

@@ -396,6 +396,22 @@ export type Database = {
     Functions: {
       is_admin: { Args: { uid: string }; Returns: boolean }
       is_premium_user: { Args: { uid: string }; Returns: boolean }
+      get_test_questions: {
+        Args: { p_test_id: string }
+        Returns: Array<{
+          id: string
+          question_text: string
+          option_a: string
+          option_b: string
+          option_c: string
+          option_d: string
+          sort_order: number
+        }>
+      }
+      submit_test_attempt: {
+        Args: { p_test_id: string; p_answers: Json; p_time_taken: number }
+        Returns: Json
+      }
     }
     Enums: {
       user_role: 'student' | 'mentor' | 'admin' | 'super_admin'
@@ -404,7 +420,7 @@ export type Database = {
       resource_type: 'youtube' | 'pdf' | 'drive' | 'website' | 'book'
       section_type: 'overview' | 'eligibility' | 'salary' | 'preparation_timeline' |
         'nature_strategy' | 'study_materials' | 'videos' | 'books' |
-        'practice_tests' | 'previous_papers' | 'faq' | 'roadmap' | 'resources' | 'custom'
+        'practice_tests' | 'previous_papers' | 'faq' | 'roadmap' | 'resources' | 'custom' | 'feedback'
       question_category: 'upsc' | 'ssc' | 'rrb' | 'banking' | 'appsc' |
         'aptitude' | 'reasoning' | 'verbal' | 'general_knowledge' |
         'economics' | 'current_affairs' | 'entrepreneurship'

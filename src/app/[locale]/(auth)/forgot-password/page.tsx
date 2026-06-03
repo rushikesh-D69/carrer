@@ -38,7 +38,7 @@ export default function ForgotPasswordPage() {
       }
     } catch (err) {
       toast.error('An unexpected error occurred')
-      console.error(err)
+      if (process.env.NODE_ENV === 'development') console.error(err)
     } finally {
       setIsLoading(false)
     }

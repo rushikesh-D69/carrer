@@ -2,19 +2,26 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 import createIntlMiddleware from 'next-intl/middleware'
 import { routing } from '@/i18n/routing'
+import { getLocaleFromPathname, localePath } from '@/lib/i18n-path'
 
 const intlMiddleware = createIntlMiddleware(routing)
 
-const protectedRoutes = ['/dashboard', '/en/dashboard', '/te/dashboard']
-const adminRoutes = ['/admin', '/en/admin', '/te/admin']
+const protectedPaths = ['/dashboard']
+const adminPaths = ['/admin']
+const authPaths = ['/login', '/signup', '/forgot-password', '/reset-password']
+
+function matchesPath(pathname: string, paths: string[]): boolean {
+  const locale = getLocaleFromPathname(pathname)
+  const withoutLocale = pathname.replace(new RegExp(`^/${locale}`), '') || '/'
+  return paths.some(
+    (p) => withoutLocale === p || withoutLocale.startsWith(`${p}/`)
+  )
+}
 
 export async function proxy(request: NextRequest) {
-  // Handle i18n routing first
   const intlResponse = intlMiddleware(request)
-
   const { pathname } = request.nextUrl
 
-  // Create Supabase response to update auth cookies
   let supabaseResponse = intlResponse || NextResponse.next({ request })
 
   const supabase = createServerClient(
@@ -38,20 +45,17 @@ export async function proxy(request: NextRequest) {
     }
   )
 
-  const { data: { user } } = await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
 
-  // Check if route is admin-only
-  const isAdminRoute = adminRoutes.some(r => pathname.startsWith(r))
-  const isProtectedRoute = protectedRoutes.some(r => pathname.startsWith(r))
-
-  if (isAdminRoute) {
+  if (matchesPath(pathname, adminPaths)) {
     if (!user) {
-      const loginUrl = new URL('/login', request.url)
+      const loginUrl = new URL(localePath(pathname, '/login'), request.url)
       loginUrl.searchParams.set('redirect', pathname)
       return NextResponse.redirect(loginUrl)
     }
 
-    // Check admin role
     const { data: roleData } = await supabase
       .from('user_roles')
       .select('role')
@@ -59,22 +63,22 @@ export async function proxy(request: NextRequest) {
       .single()
 
     if (!roleData || !['admin', 'super_admin'].includes(roleData.role)) {
-      return NextResponse.redirect(new URL('/dashboard', request.url))
+      return NextResponse.redirect(
+        new URL(localePath(pathname, '/dashboard'), request.url)
+      )
     }
   }
 
-  if (isProtectedRoute && !user) {
-    const loginUrl = new URL('/login', request.url)
+  if (matchesPath(pathname, protectedPaths) && !user) {
+    const loginUrl = new URL(localePath(pathname, '/login'), request.url)
     loginUrl.searchParams.set('redirect', pathname)
     return NextResponse.redirect(loginUrl)
   }
 
-  // Redirect logged-in users away from auth pages
-  const isAuthRoute = ['/login', '/signup', '/forgot-password',
-    '/en/login', '/en/signup', '/te/login', '/te/signup'].some(r => pathname === r)
-
-  if (isAuthRoute && user) {
-    return NextResponse.redirect(new URL('/dashboard', request.url))
+  if (matchesPath(pathname, authPaths) && user) {
+    return NextResponse.redirect(
+      new URL(localePath(pathname, '/dashboard'), request.url)
+    )
   }
 
   return supabaseResponse
@@ -82,7 +86,6 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // Match all paths except static files and Next.js internals
     '/((?!_next/static|_next/image|favicon.ico|manifest.json|icons/|images/|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 }
