@@ -27,7 +27,10 @@ export async function createClient() {
   )
 }
 
-// Service role client for admin operations (server-side only)
+/**
+ * Service role client — bypasses RLS. Server-only; never import in client components.
+ * Requires SUPABASE_SERVICE_ROLE_KEY (no NEXT_PUBLIC_ prefix).
+ */
 export async function createAdminClient() {
   const cookieStore = await cookies()
 
