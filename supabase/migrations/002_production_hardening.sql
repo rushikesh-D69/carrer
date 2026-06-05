@@ -199,7 +199,7 @@ CREATE POLICY "Anyone can read section translations" ON career_section_translati
     EXISTS (
       SELECT 1 FROM career_sections cs
       INNER JOIN careers c ON c.id = cs.career_id
-      WHERE cs.id = career_section_id AND c.published = true
+      WHERE cs.id = section_id AND c.published = true
     )
   );
 
