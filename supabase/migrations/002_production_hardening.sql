@@ -6,17 +6,21 @@
 ALTER TYPE section_type ADD VALUE IF NOT EXISTS 'feedback';
 
 -- Premium check: allow lifetime premium when expires_at is null
-CREATE OR REPLACE FUNCTION is_premium_user(user_uuid UUID)
-RETURNS BOOLEAN AS $$
-BEGIN
-  RETURN EXISTS (
+-- Keep parameter name `uid` to match 001_schema.sql (Postgres rejects renamed params on REPLACE)
+CREATE OR REPLACE FUNCTION public.is_premium_user(uid UUID)
+RETURNS BOOLEAN
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT EXISTS (
     SELECT 1 FROM profiles
-    WHERE id = user_uuid
+    WHERE id = uid
       AND is_premium = true
       AND (premium_expires_at IS NULL OR premium_expires_at > NOW())
   );
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
+$$;
 
 -- Auto-create profile + student role on signup
 CREATE OR REPLACE FUNCTION public.handle_new_user()
