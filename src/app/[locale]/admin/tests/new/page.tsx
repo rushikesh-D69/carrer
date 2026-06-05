@@ -62,10 +62,11 @@ export default function AddTestPage() {
         created_by: userData.user.id,
       }
 
-      const { error, data } = await supabase.from('tests').insert(payload).select().single()
+      const { error, data } = await supabase.from('tests').insert(payload).select('id').single()
       if (error) throw error
+      const created = data as { id: string } | null
 
-      router.push(`/${locale}/admin/tests`)
+      router.push(`/${locale}/admin/tests/${created?.id}/questions`)
     } catch (err) {
       console.error('Error creating test:', err)
       alert('Failed to save test.')

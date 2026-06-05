@@ -126,25 +126,25 @@ export default function AdminDashboardPage() {
             <h2 className="text-lg font-bold text-slate-900">Quick Actions</h2>
           </div>
           <div className="p-6 grid grid-cols-2 gap-4">
-            <Link href={`/${locale}/admin/blogs`} className="p-4 rounded-xl border border-slate-200 hover:border-imperial-blue hover:shadow-md transition-all flex flex-col items-center text-center gap-2 group">
+            <Link href={`/${locale}/admin/blogs/new`} className="p-4 rounded-xl border border-slate-200 hover:border-imperial-blue hover:shadow-md transition-all flex flex-col items-center text-center gap-2 group">
               <div className="w-12 h-12 rounded-full bg-purple-50 flex items-center justify-center text-purple-600 group-hover:bg-purple-600 group-hover:text-white transition-colors">
                 <FileText className="w-6 h-6" />
               </div>
               <span className="font-semibold text-slate-800">Write Article</span>
             </Link>
-            <Link href={`/${locale}/admin/careers`} className="p-4 rounded-xl border border-slate-200 hover:border-imperial-blue hover:shadow-md transition-all flex flex-col items-center text-center gap-2 group">
+            <Link href={`/${locale}/admin/careers/new`} className="p-4 rounded-xl border border-slate-200 hover:border-imperial-blue hover:shadow-md transition-all flex flex-col items-center text-center gap-2 group">
               <div className="w-12 h-12 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
                 <Briefcase className="w-6 h-6" />
               </div>
               <span className="font-semibold text-slate-800">Add Career</span>
             </Link>
-            <Link href={`/${locale}/admin/announcements`} className="p-4 rounded-xl border border-slate-200 hover:border-imperial-blue hover:shadow-md transition-all flex flex-col items-center text-center gap-2 group">
+            <Link href={`/${locale}/admin/announcements/new`} className="p-4 rounded-xl border border-slate-200 hover:border-imperial-blue hover:shadow-md transition-all flex flex-col items-center text-center gap-2 group">
               <div className="w-12 h-12 rounded-full bg-amber-50 flex items-center justify-center text-amber-600 group-hover:bg-amber-500 group-hover:text-white transition-colors">
                 <Bell className="w-6 h-6" />
               </div>
               <span className="font-semibold text-slate-800">New Alert</span>
             </Link>
-            <Link href={`/${locale}/admin/events`} className="p-4 rounded-xl border border-slate-200 hover:border-imperial-blue hover:shadow-md transition-all flex flex-col items-center text-center gap-2 group">
+            <Link href={`/${locale}/admin/events/new`} className="p-4 rounded-xl border border-slate-200 hover:border-imperial-blue hover:shadow-md transition-all flex flex-col items-center text-center gap-2 group">
               <div className="w-12 h-12 rounded-full bg-rose-50 flex items-center justify-center text-rose-600 group-hover:bg-rose-600 group-hover:text-white transition-colors">
                 <Calendar className="w-6 h-6" />
               </div>

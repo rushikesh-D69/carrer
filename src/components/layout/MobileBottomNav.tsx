@@ -4,18 +4,24 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useLocale } from 'next-intl'
 import { Home, Briefcase, ClipboardList, LayoutDashboard, User } from 'lucide-react'
-
-const navItems = [
-  { icon: Home, label: 'Home', path: '/' },
-  { icon: Briefcase, label: 'Careers', path: '/careers' },
-  { icon: ClipboardList, label: 'Tests', path: '/dashboard/tests' },
-  { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
-  { icon: User, label: 'Profile', path: '/dashboard/profile' },
-]
+import { useIsAdmin } from '@/hooks/useIsAdmin'
 
 export default function MobileBottomNav() {
   const locale = useLocale()
   const pathname = usePathname()
+  const { isAdmin } = useIsAdmin()
+
+  const dashboardPath = isAdmin ? '/admin' : '/dashboard'
+
+  if (pathname.includes('/admin')) return null
+
+  const navItems = [
+    { icon: Home, label: 'Home', path: '/' },
+    { icon: Briefcase, label: 'Careers', path: '/careers' },
+    { icon: ClipboardList, label: 'Tests', path: isAdmin ? '/admin/tests' : '/dashboard/tests' },
+    { icon: LayoutDashboard, label: isAdmin ? 'Admin' : 'Dashboard', path: dashboardPath },
+    { icon: User, label: 'Profile', path: isAdmin ? '/admin/settings' : '/dashboard/profile' },
+  ]
 
   return (
     <nav className="mobile-bottom-nav md:hidden" aria-label="Mobile navigation">
@@ -24,7 +30,7 @@ export default function MobileBottomNav() {
         const isActive =
           path === '/'
             ? pathname === `/${locale}` || pathname === `/${locale}/`
-            : pathname.startsWith(`/${locale}${path}`)
+            : pathname === href || pathname.startsWith(`${href}/`)
 
         return (
           <Link

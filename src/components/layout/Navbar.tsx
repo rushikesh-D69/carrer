@@ -7,6 +7,7 @@ import { useTranslations, useLocale } from 'next-intl'
 import { Menu, X, Search, Bell, ChevronDown, Globe, BookOpen, Landmark, Briefcase, Store, Rocket, TrendingUp } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { createClient } from '@/lib/supabase/client'
+import { useIsAdmin } from '@/hooks/useIsAdmin'
 
 const careerCategories = [
   { icon: Landmark, key: 'government', slug: 'government', color: '#00296B' },
@@ -25,9 +26,11 @@ export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [user, setUser] = useState<null | { name: string; email?: string }>(null)
   const supabase = createClient()
+  const { isAdmin } = useIsAdmin()
 
   const otherLocale = locale === 'en' ? 'te' : 'en'
   const localePath = (path: string) => `/${locale}${path}`
+  const dashboardPath = isAdmin ? '/admin' : '/dashboard'
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 10)
@@ -236,11 +239,11 @@ export default function Navbar() {
 
             {user ? (
               <>
-                <Link href={localePath('/dashboard')} className="p-2 rounded-lg text-slate-600 hover:text-imperial-blue hover:bg-slate-50 transition-colors">
+                <Link href={localePath(dashboardPath)} className="p-2 rounded-lg text-slate-600 hover:text-imperial-blue hover:bg-slate-50 transition-colors">
                   <Bell className="w-5 h-5" />
                 </Link>
-                <Link href={localePath('/dashboard')} className="btn-primary text-sm px-4 h-9">
-                  {t('nav.dashboard')}
+                <Link href={localePath(dashboardPath)} className="btn-primary text-sm px-4 h-9">
+                  {isAdmin ? 'Admin Panel' : t('nav.dashboard')}
                 </Link>
                 <button
                   onClick={handleLogout}
@@ -342,8 +345,8 @@ export default function Navbar() {
                 <div className="pt-2 flex flex-col gap-2">
                   {user ? (
                     <>
-                      <Link href={localePath('/dashboard')} className="btn-primary w-full text-center">
-                        {t('nav.dashboard')}
+                      <Link href={localePath(dashboardPath)} className="btn-primary w-full text-center">
+                        {isAdmin ? 'Admin Panel' : t('nav.dashboard')}
                       </Link>
                       <button
                         onClick={handleLogout}

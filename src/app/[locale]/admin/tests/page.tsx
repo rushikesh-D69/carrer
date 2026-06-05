@@ -5,6 +5,8 @@ import { createClient } from '@/lib/supabase/client'
 import { Search, Plus, Edit2, Trash2, Clock, CheckCircle } from 'lucide-react'
 import Link from 'next/link'
 import { useLocale } from 'next-intl'
+import { confirmAndDelete } from '@/lib/admin/helpers'
+import { toast } from 'sonner'
 
 export default function TestsAdminPage() {
   const supabase = createClient()
@@ -47,6 +49,14 @@ export default function TestsAdminPage() {
       setTests(tests.map(t => t.id === id ? { ...t, published: !currentStatus } : t))
     } catch (err) {
       console.error('Error toggling test publish status:', err)
+    }
+  }
+
+  const handleDelete = async (id: string, title: string) => {
+    const ok = await confirmAndDelete(title, () => supabase.from('tests').delete().eq('id', id))
+    if (ok) {
+      setTests((t) => t.filter((x) => x.id !== id))
+      toast.success('Test deleted')
     }
   }
 
@@ -150,10 +160,10 @@ export default function TestsAdminPage() {
                         <Link href={`/${locale}/admin/tests/${test.id}/questions`} className="p-2 text-slate-400 hover:text-imperial-blue hover:bg-slate-100 rounded-lg transition-colors" title="Manage Questions">
                           <CheckCircle className="w-4 h-4" />
                         </Link>
-                        <button className="p-2 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors">
+                        <Link href={`/${locale}/admin/tests/${test.id}/edit`} className="p-2 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors">
                           <Edit2 className="w-4 h-4" />
-                        </button>
-                        <button className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                        </Link>
+                        <button onClick={() => handleDelete(test.id, test.title)} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
                           <Trash2 className="w-4 h-4" />
                         </button>
                       </div>

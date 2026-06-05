@@ -5,6 +5,8 @@ import { createClient } from '@/lib/supabase/client'
 import { Search, Plus, Edit2, Trash2, Bell, AlertTriangle } from 'lucide-react'
 import Link from 'next/link'
 import { useLocale } from 'next-intl'
+import { confirmAndDelete } from '@/lib/admin/helpers'
+import { toast } from 'sonner'
 
 export default function AnnouncementsAdminPage() {
   const supabase = createClient()
@@ -47,6 +49,14 @@ export default function AnnouncementsAdminPage() {
       setAnnouncements(announcements.map(a => a.id === id ? { ...a, is_active: !currentStatus } : a))
     } catch (err) {
       console.error('Error toggling announcement active status:', err)
+    }
+  }
+
+  const handleDelete = async (id: string, title: string) => {
+    const ok = await confirmAndDelete(title, () => supabase.from('announcements').delete().eq('id', id))
+    if (ok) {
+      setAnnouncements((a) => a.filter((x) => x.id !== id))
+      toast.success('Announcement deleted')
     }
   }
 
@@ -147,10 +157,10 @@ export default function AnnouncementsAdminPage() {
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2">
-                        <button className="p-2 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors">
+                        <Link href={`/${locale}/admin/announcements/${announcement.id}/edit`} className="p-2 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors">
                           <Edit2 className="w-4 h-4" />
-                        </button>
-                        <button className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                        </Link>
+                        <button onClick={() => handleDelete(announcement.id, announcement.title)} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
                           <Trash2 className="w-4 h-4" />
                         </button>
                       </div>

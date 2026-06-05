@@ -5,6 +5,8 @@ import { createClient } from '@/lib/supabase/client'
 import { Search, Plus, Edit2, Trash2, Eye, LayoutTemplate } from 'lucide-react'
 import Link from 'next/link'
 import { useLocale } from 'next-intl'
+import { confirmAndDelete } from '@/lib/admin/helpers'
+import { toast } from 'sonner'
 
 export default function CareerBuilderPage() {
   const supabase = createClient()
@@ -50,6 +52,14 @@ export default function CareerBuilderPage() {
     }
   }
 
+  const handleDelete = async (id: string, title: string) => {
+    const ok = await confirmAndDelete(title, () => supabase.from('careers').delete().eq('id', id))
+    if (ok) {
+      setCareers((c) => c.filter((x) => x.id !== id))
+      toast.success('Career deleted')
+    }
+  }
+
   const filteredCareers = careers.filter(career => 
     (career.title?.toLowerCase() || '').includes(search.toLowerCase()) || 
     (career.career_categories?.name?.toLowerCase() || '').includes(search.toLowerCase())
@@ -73,10 +83,10 @@ export default function CareerBuilderPage() {
               className="pl-9 pr-4 py-2 border border-slate-200 rounded-lg text-sm w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-imperial-blue/20 focus:border-imperial-blue transition-all"
             />
           </div>
-          <button className="flex items-center gap-2 bg-imperial-blue hover:bg-french-blue text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors shadow-sm">
+          <Link href={`/${locale}/admin/careers/new`} className="flex items-center gap-2 bg-imperial-blue hover:bg-french-blue text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors shadow-sm">
             <Plus className="w-4 h-4" />
             New Career
-          </button>
+          </Link>
         </div>
       </div>
 
@@ -136,13 +146,13 @@ export default function CareerBuilderPage() {
                         <Link href={`/${locale}/careers/${career.slug}`} target="_blank" className="p-2 text-slate-400 hover:text-french-blue hover:bg-slate-100 rounded-lg transition-colors" title="View Live">
                           <Eye className="w-4 h-4" />
                         </Link>
-                        <button className="p-2 text-slate-400 hover:text-imperial-blue hover:bg-slate-100 rounded-lg transition-colors" title="Edit Content Blocks">
+                        <Link href={`/${locale}/admin/careers/${career.id}/sections`} className="p-2 text-slate-400 hover:text-imperial-blue hover:bg-slate-100 rounded-lg transition-colors" title="Edit Content Blocks">
                           <LayoutTemplate className="w-4 h-4" />
-                        </button>
-                        <button className="p-2 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors" title="Edit Details">
+                        </Link>
+                        <Link href={`/${locale}/admin/careers/${career.id}/edit`} className="p-2 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors" title="Edit Details">
                           <Edit2 className="w-4 h-4" />
-                        </button>
-                        <button className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Delete">
+                        </Link>
+                        <button onClick={() => handleDelete(career.id, career.title)} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Delete">
                           <Trash2 className="w-4 h-4" />
                         </button>
                       </div>

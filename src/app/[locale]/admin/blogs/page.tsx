@@ -5,6 +5,8 @@ import { createClient } from '@/lib/supabase/client'
 import { Search, Plus, Edit2, Trash2, Eye } from 'lucide-react'
 import Link from 'next/link'
 import { useLocale } from 'next-intl'
+import { confirmAndDelete } from '@/lib/admin/helpers'
+import { toast } from 'sonner'
 
 export default function BlogEditorPage() {
   const supabase = createClient()
@@ -57,6 +59,14 @@ export default function BlogEditorPage() {
     }
   }
 
+  const handleDelete = async (id: string, title: string) => {
+    const ok = await confirmAndDelete(title, () => supabase.from('blogs').delete().eq('id', id))
+    if (ok) {
+      setBlogs((b) => b.filter((x) => x.id !== id))
+      toast.success('Article deleted')
+    }
+  }
+
   const filteredBlogs = blogs.filter(blog => 
     (blog.title?.toLowerCase() || '').includes(search.toLowerCase()) || 
     (blog.blog_categories?.name?.toLowerCase() || '').includes(search.toLowerCase())
@@ -80,10 +90,10 @@ export default function BlogEditorPage() {
               className="pl-9 pr-4 py-2 border border-slate-200 rounded-lg text-sm w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-imperial-blue/20 focus:border-imperial-blue transition-all"
             />
           </div>
-          <button className="flex items-center gap-2 bg-imperial-blue hover:bg-french-blue text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors shadow-sm">
+          <Link href={`/${locale}/admin/blogs/new`} className="flex items-center gap-2 bg-imperial-blue hover:bg-french-blue text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors shadow-sm">
             <Plus className="w-4 h-4" />
             Write Article
-          </button>
+          </Link>
         </div>
       </div>
 
@@ -150,10 +160,10 @@ export default function BlogEditorPage() {
                         <Link href={`/${locale}/blog/${blog.slug}`} target="_blank" className="p-2 text-slate-400 hover:text-french-blue hover:bg-slate-100 rounded-lg transition-colors" title="View Live">
                           <Eye className="w-4 h-4" />
                         </Link>
-                        <button className="p-2 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors" title="Edit Markdown">
+                        <Link href={`/${locale}/admin/blogs/${blog.id}/edit`} className="p-2 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors" title="Edit Markdown">
                           <Edit2 className="w-4 h-4" />
-                        </button>
-                        <button className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Delete">
+                        </Link>
+                        <button onClick={() => handleDelete(blog.id, blog.title)} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Delete">
                           <Trash2 className="w-4 h-4" />
                         </button>
                       </div>

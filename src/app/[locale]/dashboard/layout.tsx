@@ -5,7 +5,8 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useTranslations, useLocale } from 'next-intl'
 import { createClient } from '@/lib/supabase/client'
-import { LayoutDashboard, ClipboardList, BookMarked, Award, User, Crown, ArrowRight, Compass } from 'lucide-react'
+import { LayoutDashboard, ClipboardList, BookMarked, Award, User, Crown, ArrowRight, Compass, Shield } from 'lucide-react'
+import { useIsAdmin } from '@/hooks/useIsAdmin'
 import { motion } from 'framer-motion'
 import { toast } from 'sonner'
 
@@ -20,6 +21,7 @@ export default function DashboardLayout({
   const pathname = usePathname()
   const router = useRouter()
   const supabase = createClient()
+  const { isAdmin } = useIsAdmin()
 
   const [profile, setProfile] = useState<{
     fullName: string
@@ -135,6 +137,15 @@ export default function DashboardLayout({
 
               {/* Sidebar Menu Links */}
               <nav className="space-y-1">
+                {isAdmin && (
+                  <Link
+                    href={`/${locale}/admin`}
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold bg-imperial-blue text-white hover:bg-french-blue transition-all mb-2"
+                  >
+                    <Shield className="w-4 h-4" />
+                    <span>Admin Panel</span>
+                  </Link>
+                )}
                 {menuItems.map((item) => {
                   const Icon = item.icon
                   const active = isLinkActive(item.path)
