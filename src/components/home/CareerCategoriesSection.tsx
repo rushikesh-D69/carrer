@@ -78,7 +78,7 @@ export default function CareerCategoriesSection() {
         </div>
 
         {/* Mobile: horizontal scroll | Desktop: grid */}
-        <div className="scroll-cards md:grid md:grid-cols-3 lg:grid-cols-5 md:gap-4">
+        <div className="scroll-cards -mx-4 px-4 sm:mx-0 sm:px-0 md:grid md:grid-cols-3 lg:grid-cols-5 md:gap-4">
           {CATEGORIES.map(({ key, slug, icon: Icon, color, bg, description, count }, i) => (
             <motion.div
               key={slug}

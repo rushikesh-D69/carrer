@@ -8,7 +8,8 @@ Run these **in order** in the Supabase SQL Editor (or via CLI migrations).
 |------|------|---------|
 | 1 | `migrations/001_schema.sql` | Tables, enums, RLS, base indexes |
 | 2 | `migrations/002_production_hardening.sql` | Triggers, RPC grading, tighter RLS, more indexes (**safe to re-run**) |
-| 3 | `seed.sql` | Sample careers, tests, settings |
+| 3 | `migrations/003_fix_schema_permissions.sql` | Grant schema permissions to anon/authenticated |
+| 4 | `seed.sql` | Sample careers, tests, blogs, events (**safe to re-run**) |
 
 ## Production functions (002)
 

@@ -115,7 +115,7 @@ export default async function CareerDetailPage({ params }: PageProps) {
             <ChevronRight className="w-3 h-3 text-white/40" />
             <Link href={localePath('/careers')} className="hover:text-school-bus-yellow transition-colors">Careers</Link>
             <ChevronRight className="w-3 h-3 text-white/40" />
-            <span className="text-school-bus-yellow">{career.title}</span>
+            <span className="text-school-bus-yellow truncate max-w-[10rem] sm:max-w-md">{career.title}</span>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
@@ -130,7 +130,7 @@ export default async function CareerDetailPage({ params }: PageProps) {
               >
                 {cat?.name || 'Career Path'}
               </span>
-              <h1 className="font-heading font-extrabold text-3xl md:text-5xl text-white tracking-tight leading-tight">
+              <h1 className="font-heading font-extrabold text-2xl sm:text-3xl md:text-5xl text-white tracking-tight leading-tight">
                 {career.title}
               </h1>
               <p className="text-white/80 text-sm md:text-base max-w-2xl leading-relaxed">
@@ -282,7 +282,7 @@ export default async function CareerDetailPage({ params }: PageProps) {
                   </div>
                 ) : (
                   /* Standard Markdown rendering */
-                  <div className="markdown-content prose max-w-none">
+                  <div className="markdown-content prose max-w-none min-w-0">
                     <ReactMarkdown remarkPlugins={[remarkGfm]}>
                       {section.content_md || ''}
                     </ReactMarkdown>

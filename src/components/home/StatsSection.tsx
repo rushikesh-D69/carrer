@@ -35,7 +35,7 @@ export default function StatsSection() {
               <div className="font-heading font-black text-2xl md:text-3xl text-white mb-1">
                 {value}
               </div>
-              <div className="text-white/60 text-sm font-medium">{label}</div>
+              <div className="text-white/60 text-xs sm:text-sm font-medium leading-snug px-1">{label}</div>
             </motion.div>
           ))}
         </div>

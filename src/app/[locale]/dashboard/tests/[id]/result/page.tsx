@@ -188,12 +188,12 @@ export default function TestResultPage() {
         </div>
 
         {/* Score metrics */}
-        <div className="flex items-center gap-6 flex-shrink-0">
-          <div className="text-center bg-white/10 px-6 py-4 rounded-2xl border border-white/10 backdrop-blur-sm">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-6 w-full sm:w-auto flex-shrink-0">
+          <div className="text-center bg-white/10 px-4 sm:px-6 py-3 sm:py-4 rounded-2xl border border-white/10 backdrop-blur-sm flex-1 sm:flex-none">
             <span className="text-[10px] text-white/75 font-semibold uppercase tracking-wider block">Percentage</span>
             <strong className="text-white text-3xl sm:text-4xl font-heading font-extrabold">{results.percentage}%</strong>
           </div>
-          <div className="text-center bg-white/10 px-6 py-4 rounded-2xl border border-white/10 backdrop-blur-sm">
+          <div className="text-center bg-white/10 px-4 sm:px-6 py-3 sm:py-4 rounded-2xl border border-white/10 backdrop-blur-sm flex-1 sm:flex-none">
             <span className="text-[10px] text-white/75 font-semibold uppercase tracking-wider block">Time Spent</span>
             <strong className="text-white text-base sm:text-lg font-heading font-bold block mt-2">{formatTime(results.timeTaken)}</strong>
           </div>

@@ -63,7 +63,7 @@ export default function CompareSelectorPage({ params }: PageProps) {
             <ArrowLeftRight className="w-3.5 h-3.5 animate-pulse" />
             Comparison Engine
           </div>
-          <h1 className="font-heading font-extrabold text-3xl md:text-5xl text-white tracking-tight leading-tight mb-4">
+          <h1 className="font-heading font-extrabold text-2xl sm:text-3xl md:text-5xl text-white tracking-tight leading-tight mb-4">
             Compare Careers Side-by-Side
           </h1>
           <p className="text-white/80 text-base max-w-xl mx-auto leading-relaxed">

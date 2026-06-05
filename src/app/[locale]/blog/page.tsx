@@ -101,7 +101,7 @@ export default async function BlogPage({ params, searchParams }: PageProps) {
             <BookOpen className="w-3.5 h-3.5" />
             Knowledge Base
           </div>
-          <h1 className="font-heading font-extrabold text-3xl md:text-5xl text-white tracking-tight leading-tight mb-4">
+          <h1 className="font-heading font-extrabold text-2xl sm:text-3xl md:text-5xl text-white tracking-tight leading-tight mb-4">
             Ramanujonomics Blog & Articles
           </h1>
           <p className="text-white/80 text-base md:text-lg max-w-xl mx-auto leading-relaxed">
@@ -202,7 +202,22 @@ export default async function BlogPage({ params, searchParams }: PageProps) {
                   key={post.id}
                   className="bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md hover:translate-y-[-2px] transition-all overflow-hidden flex flex-col group"
                 >
-                  <div className="p-6 flex flex-col flex-1 space-y-4">
+                  {post.featured_image ? (
+                    <div className="aspect-video w-full overflow-hidden bg-slate-100">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={post.featured_image}
+                        alt={post.title}
+                        className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300"
+                        loading="lazy"
+                      />
+                    </div>
+                  ) : (
+                    <div className="aspect-video w-full bg-gradient-to-br from-imperial-blue/10 to-steel-azure/10 flex items-center justify-center">
+                      <BookOpen className="w-10 h-10 text-imperial-blue/30" />
+                    </div>
+                  )}
+                  <div className="p-4 sm:p-6 flex flex-col flex-1 space-y-4">
                     {/* Category & Date */}
                     <div className="flex items-center justify-between text-xs text-slate-400">
                       <span className="font-semibold text-steel-azure uppercase tracking-wider">

@@ -42,7 +42,7 @@ export default async function AnnouncementsSection() {
   return (
     <section className="section bg-surface-2">
       <div className="container-base">
-        <div className="flex items-center justify-between mb-8 md:mb-10">
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-8 md:mb-10">
           <div>
             <div className="divider-gold mb-3 mx-0" />
             <h2 className="section-title text-left mb-0">Announcements</h2>

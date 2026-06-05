@@ -80,7 +80,7 @@ export default function ContactPage({ params }: PageProps) {
             <MessageSquare className="w-3.5 h-3.5" />
             Support Center
           </div>
-          <h1 className="font-heading font-extrabold text-3xl md:text-5xl text-white tracking-tight leading-tight mb-4">
+          <h1 className="font-heading font-extrabold text-2xl sm:text-3xl md:text-5xl text-white tracking-tight leading-tight mb-4">
             {t('contact.title')}
           </h1>
           <p className="text-white/80 text-base md:text-lg max-w-xl mx-auto leading-relaxed">

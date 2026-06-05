@@ -66,7 +66,7 @@ export default async function AnnouncementsPage({ params }: PageProps) {
             <Bell className="w-3.5 h-3.5 animate-bounce" />
             Bulletins & Updates
           </div>
-          <h1 className="font-heading font-extrabold text-3xl md:text-5xl text-white tracking-tight leading-tight mb-4">
+          <h1 className="font-heading font-extrabold text-2xl sm:text-3xl md:text-5xl text-white tracking-tight leading-tight mb-4">
             Platform Announcements
           </h1>
           <p className="text-white/80 text-base md:text-lg max-w-xl mx-auto leading-relaxed">

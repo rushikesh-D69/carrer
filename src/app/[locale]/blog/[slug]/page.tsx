@@ -80,7 +80,7 @@ export default async function BlogPostPage({ params }: PageProps) {
             <ChevronRight className="w-3 h-3 text-white/40" />
             <Link href={localePath('/blog')} className="hover:text-school-bus-yellow transition-colors">Blog</Link>
             <ChevronRight className="w-3 h-3 text-white/40" />
-            <span className="text-school-bus-yellow truncate max-w-xs">{post.title}</span>
+            <span className="text-school-bus-yellow truncate max-w-[10rem] sm:max-w-xs">{post.title}</span>
           </div>
 
           <div className="max-w-3xl space-y-4">
@@ -141,7 +141,7 @@ export default async function BlogPostPage({ params }: PageProps) {
           </aside>
 
           {/* Post Content */}
-          <main className="lg:col-span-3 bg-white rounded-2xl border border-slate-200 p-6 md:p-10 shadow-sm">
+          <main className="lg:col-span-3 bg-white rounded-2xl border border-slate-200 p-4 sm:p-6 md:p-10 shadow-sm min-w-0">
             {/* Mobile Back Link */}
             <div className="lg:hidden mb-6">
               <Link
@@ -153,8 +153,19 @@ export default async function BlogPostPage({ params }: PageProps) {
               </Link>
             </div>
 
+            {post.featured_image && (
+              <div className="mb-6 -mx-4 sm:mx-0 rounded-none sm:rounded-xl overflow-hidden aspect-video bg-slate-100">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={post.featured_image}
+                  alt={post.title}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            )}
+
             {/* Markdown content */}
-            <article className="markdown-content prose max-w-none">
+            <article className="markdown-content prose max-w-none min-w-0">
               <ReactMarkdown remarkPlugins={[remarkGfm]}>
                 {post.content_md}
               </ReactMarkdown>

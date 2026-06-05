@@ -656,4 +656,31 @@
   .markdown-content tr:nth-child(even) td {
     background: var(--color-surface-2);
   }
+
+  /* Responsive media inside articles (blogs, careers) */
+  .markdown-content img,
+  .markdown-content video,
+  .markdown-content iframe {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--radius-lg);
+  }
+
+  .markdown-content iframe {
+    aspect-ratio: 16 / 9;
+    width: 100%;
+  }
+
+  .markdown-content {
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  /* Prose plugin fallback */
+  .prose img,
+  .prose video,
+  .prose iframe {
+    max-width: 100%;
+    height: auto;
+  }
 }

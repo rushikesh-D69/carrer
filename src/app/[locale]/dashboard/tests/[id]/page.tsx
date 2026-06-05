@@ -357,7 +357,7 @@ export default function TestEnginePage() {
           <div className="divider" />
 
           {/* Test details */}
-          <div className="grid grid-cols-3 gap-4 text-center">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 text-center">
             <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
               <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider block">Duration</span>
               <strong className="text-slate-800 text-sm font-heading">{test.duration} Minutes</strong>
@@ -409,9 +409,9 @@ export default function TestEnginePage() {
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col justify-between">
       {/* Header Info Panel */}
-      <header className="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between sticky top-0 z-20">
-        <div>
-          <h2 className="font-heading font-bold text-slate-800 text-base leading-none truncate max-w-[280px] sm:max-w-md">
+      <header className="bg-white border-b border-slate-200 px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between gap-3 sticky top-16 z-20">
+        <div className="min-w-0 flex-1">
+          <h2 className="font-heading font-bold text-slate-800 text-sm sm:text-base leading-none truncate">
             {test.title}
           </h2>
           <p className="text-[10px] font-semibold text-slate-400 mt-1">
@@ -481,7 +481,7 @@ export default function TestEnginePage() {
                       }`}>
                         {key.toUpperCase()}
                       </span>
-                      <span className="text-sm font-medium">{val}</span>
+                      <span className="text-sm font-medium break-words text-left">{val}</span>
                     </div>
                     {isSelected && (
                       <div className="w-5 h-5 rounded-full bg-imperial-blue flex items-center justify-center text-white">
@@ -495,11 +495,11 @@ export default function TestEnginePage() {
           </div>
 
           {/* Action buttons */}
-          <div className="flex justify-between items-center mt-8 pt-4 border-t border-slate-100">
+          <div className="flex flex-col-reverse sm:flex-row justify-between items-stretch sm:items-center gap-3 mt-8 pt-4 border-t border-slate-100">
             <button
               onClick={() => setCurrentIndex(prev => Math.max(0, prev - 1))}
               disabled={currentIndex === 0}
-              className="btn-outline h-10 px-4 rounded-lg flex items-center gap-1.5 disabled:opacity-50"
+              className="btn-outline h-11 px-4 rounded-lg flex items-center justify-center gap-1.5 disabled:opacity-50 w-full sm:w-auto"
             >
               <ArrowLeft className="w-4 h-4" />
               <span>Previous</span>
@@ -509,7 +509,7 @@ export default function TestEnginePage() {
               <button
                 onClick={() => submitTest(false)}
                 disabled={isSubmitting}
-                className="btn-cta h-10 px-5 rounded-lg flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-md cursor-pointer"
+                className="btn-cta h-11 px-5 rounded-lg flex items-center justify-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-md cursor-pointer w-full sm:w-auto"
               >
                 <span>Submit Exam</span>
                 <Send className="w-4 h-4" />
@@ -517,7 +517,7 @@ export default function TestEnginePage() {
             ) : (
               <button
                 onClick={() => setCurrentIndex(prev => Math.min(questions.length - 1, prev + 1))}
-                className="btn-primary h-10 px-4 rounded-lg flex items-center gap-1.5 cursor-pointer"
+                className="btn-primary h-11 px-4 rounded-lg flex items-center justify-center gap-1.5 cursor-pointer w-full sm:w-auto"
               >
                 <span>Next</span>
                 <ArrowRight className="w-4 h-4" />
@@ -534,7 +534,7 @@ export default function TestEnginePage() {
             </h4>
 
             {/* Grid of indices */}
-            <div className="grid grid-cols-5 gap-2.5">
+            <div className="grid grid-cols-4 sm:grid-cols-5 gap-2 sm:gap-2.5">
               {questions.map((q, idx) => {
                 const isSelected = currentIndex === idx
                 const isAnswered = !!answers[q.id]

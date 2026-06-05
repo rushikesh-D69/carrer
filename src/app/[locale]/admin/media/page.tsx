@@ -118,8 +118,8 @@ export default function MediaLibraryPage() {
           <h1 className="text-2xl font-bold text-slate-900">Admin Drive / Media Library</h1>
           <p className="text-sm text-slate-500 mt-1">Manage study materials, files, and embedded YouTube videos.</p>
         </div>
-        <div className="flex items-center gap-3">
-          <div className="relative">
+        <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-3 w-full sm:w-auto">
+          <div className="relative flex-1 sm:flex-none">
             <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
             <input 
               type="text" 
@@ -141,7 +141,7 @@ export default function MediaLibraryPage() {
           </select>
           <button 
             onClick={() => setIsModalOpen(true)}
-            className="flex items-center gap-2 bg-imperial-blue hover:bg-french-blue text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors shadow-sm"
+            className="flex items-center justify-center gap-2 bg-imperial-blue hover:bg-french-blue text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors shadow-sm w-full sm:w-auto"
           >
             <Plus className="w-4 h-4" />
             Add Media
