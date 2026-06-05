@@ -52,7 +52,7 @@ export default function LoginPage() {
 
     setIsLoading(true)
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       })
@@ -61,7 +61,21 @@ export default function LoginPage() {
         toast.error(error.message)
       } else {
         toast.success(t('dashboard.welcome') || 'Welcome back!')
-        router.push(redirectUrl)
+        
+        let finalRedirectUrl = redirectUrl
+        if (data.user) {
+          const { data: roleData } = await supabase
+            .from('user_roles')
+            .select('role')
+            .eq('user_id', data.user.id)
+            .single()
+            
+          if (roleData && ['admin', 'super_admin'].includes((roleData as any).role)) {
+            finalRedirectUrl = `/${locale}/admin`
+          }
+        }
+        
+        router.push(finalRedirectUrl)
         router.refresh()
       }
     } catch (err) {
