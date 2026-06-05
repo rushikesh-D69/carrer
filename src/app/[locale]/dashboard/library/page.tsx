@@ -18,44 +18,11 @@ export default function LibraryPage() {
   const [savedCareers, setSavedCareers] = useState<any[]>([])
   const [savedBlogs, setSavedBlogs] = useState<any[]>([])
 
-  // Fallback Mock Bookmark Data
-  const mockSavedCareers = [
-    {
-      id: 'lib-car-1',
-      career_id: 'car-1',
-      title: 'UPSC Civil Services (IAS/IPS/IFS)',
-      slug: 'upsc-civil-services',
-      category: 'government',
-      description: 'The most prestigious government examination in India.',
-    },
-    {
-      id: 'lib-car-2',
-      career_id: 'car-4',
-      title: 'Software Engineer',
-      slug: 'software-engineer',
-      category: 'private',
-      description: 'Corporate positions for software development across all industries.',
-    },
-  ]
-
-  const mockSavedBlogs = [
-    {
-      id: 'lib-blog-1',
-      blog_id: 'blog-1',
-      title: 'How to Manage Prep Stress: A Professor\'s Advice',
-      slug: 'manage-prep-stress',
-      category: 'careers',
-      description: 'Expert tips on mental health, scheduling, and consistent planning.',
-    }
-  ]
-
   useEffect(() => {
     const fetchLibrary = async () => {
       try {
         const { data: { user } } = await supabase.auth.getUser()
         if (!user) {
-          setSavedCareers(mockSavedCareers)
-          setSavedBlogs(mockSavedBlogs)
           setLoading(false)
           return
         }
@@ -110,16 +77,14 @@ export default function LibraryPage() {
             })
           )
 
-          setSavedCareers(careers.length > 0 ? careers : mockSavedCareers)
-          setSavedBlogs(blogs.length > 0 ? blogs : mockSavedBlogs)
+          setSavedCareers(careers)
+          setSavedBlogs(blogs)
         } else {
-          setSavedCareers(mockSavedCareers)
-          setSavedBlogs(mockSavedBlogs)
+          setSavedCareers([])
+          setSavedBlogs([])
         }
       } catch (err) {
-        console.error('Error fetching bookmarks:', err)
-        setSavedCareers(mockSavedCareers)
-        setSavedBlogs(mockSavedBlogs)
+        if (process.env.NODE_ENV === 'development') console.error('Error fetching bookmarks:', err)
       } finally {
         setLoading(false)
       }

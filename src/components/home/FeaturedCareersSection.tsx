@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { ArrowRight, Clock, TrendingUp, Users } from 'lucide-react'
+import { getLocale } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
 
 import { FALLBACK_CAREERS } from '@/lib/fallback-data'
@@ -19,6 +20,7 @@ const DIFFICULTY_LABELS: Record<string, string> = {
 }
 
 export default async function FeaturedCareersSection() {
+  const locale = await getLocale()
   let careers: typeof FALLBACK_CAREERS = FALLBACK_CAREERS.filter(c => c.featured).slice(0, 6)
 
   try {
@@ -51,7 +53,7 @@ export default async function FeaturedCareersSection() {
             </p>
           </div>
           <Link
-            href="/en/careers"
+            href={`/${locale}/careers`}
             className="btn-outline flex-shrink-0 self-start sm:self-auto text-sm px-5 h-10"
           >
             View All Careers
@@ -68,7 +70,7 @@ export default async function FeaturedCareersSection() {
             return (
               <Link
                 key={career.id}
-                href={`/en/careers/${career.slug}`}
+                href={`/${locale}/careers/${career.slug}`}
                 className="card-base flex flex-col group overflow-hidden"
               >
                 {/* Card color top strip */}

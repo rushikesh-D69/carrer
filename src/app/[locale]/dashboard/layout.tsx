@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useTranslations, useLocale } from 'next-intl'
 import { createClient } from '@/lib/supabase/client'
-import { LayoutDashboard, ClipboardList, BookMarked, Award, User, Crown, ArrowRight, ShieldCheck } from 'lucide-react'
+import { LayoutDashboard, ClipboardList, BookMarked, Award, User, Crown, ArrowRight, Compass } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { toast } from 'sonner'
 
@@ -33,13 +33,7 @@ export default function DashboardLayout({
       try {
         const { data: { user } } = await supabase.auth.getUser()
         if (!user) {
-          // If no user, fallback to mock details for offline/sandbox testing
-          setProfile({
-            fullName: 'Guest Student',
-            email: 'student@ramanujonomics.com',
-            isPremium: false,
-          })
-          setLoading(false)
+          router.replace(`/${locale}/login?redirect=${encodeURIComponent(pathname)}`)
           return
         }
 
@@ -57,12 +51,8 @@ export default function DashboardLayout({
           isPremium: profileData?.is_premium || false,
         })
       } catch (err) {
-        console.error('Error fetching profile:', err)
-        setProfile({
-          fullName: 'Guest Student',
-          email: 'student@ramanujonomics.com',
-          isPremium: false,
-        })
+        if (process.env.NODE_ENV === 'development') console.error('Error fetching profile:', err)
+        router.replace(`/${locale}/login?redirect=${encodeURIComponent(pathname)}`)
       } finally {
         setLoading(false)
       }
@@ -98,6 +88,7 @@ export default function DashboardLayout({
   const menuItems = [
     { icon: LayoutDashboard, label: t('dashboard.overview'), path: `/${locale}/dashboard` },
     { icon: ClipboardList, label: t('dashboard.my_tests'), path: `/${locale}/dashboard/tests` },
+    { icon: Compass, label: 'Career Assessment', path: `/${locale}/dashboard/assessments` },
     { icon: BookMarked, label: t('dashboard.my_library'), path: `/${locale}/dashboard/library` },
     { icon: Award, label: t('dashboard.certificates'), path: `/${locale}/dashboard/certificates` },
     { icon: User, label: t('dashboard.my_profile'), path: `/${locale}/dashboard/profile` },

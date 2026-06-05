@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { getLocale } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
 import { Bell, ChevronRight, AlertCircle, Info, AlertTriangle, Megaphone } from 'lucide-react'
 
@@ -20,6 +21,7 @@ const FALLBACK = [
 ]
 
 export default async function AnnouncementsSection() {
+  const locale = await getLocale()
   let announcements = FALLBACK
 
   try {
@@ -45,7 +47,7 @@ export default async function AnnouncementsSection() {
             <div className="divider-gold mb-3 mx-0" />
             <h2 className="section-title text-left mb-0">Announcements</h2>
           </div>
-          <Link href="/en/announcements" className="flex items-center gap-1 text-sm font-semibold text-imperial-blue hover:text-french-blue transition-colors">
+          <Link href={`/${locale}/announcements`} className="flex items-center gap-1 text-sm font-semibold text-imperial-blue hover:text-french-blue transition-colors">
             View All <ChevronRight className="w-4 h-4" />
           </Link>
         </div>

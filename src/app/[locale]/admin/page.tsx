@@ -1,13 +1,12 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { createClient } from '@/lib/supabase/client'
+import { fetchAdminStats } from '@/app/actions/admin'
 import { Users, Briefcase, FileText, MessageSquare, TrendingUp, Calendar, AlertCircle, Bell } from 'lucide-react'
 import Link from 'next/link'
 import { useLocale } from 'next-intl'
 
 export default function AdminDashboardPage() {
-  const supabase = createClient()
   const locale = useLocale()
   
   const [stats, setStats] = useState({
@@ -22,48 +21,20 @@ export default function AdminDashboardPage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const fetchStats = async () => {
+    const load = async () => {
       try {
-        // Fetch counts for various entities
-        const [
-          { count: usersCount },
-          { count: careersCount },
-          { count: blogsCount },
-          { count: leadsCount },
-          { count: testsCount },
-          { count: eventsCount },
-          { data: leadsData }
-        ] = await Promise.all([
-          supabase.from('profiles').select('*', { count: 'exact', head: true }),
-          supabase.from('careers').select('*', { count: 'exact', head: true }),
-          supabase.from('blogs').select('*', { count: 'exact', head: true }),
-          supabase.from('leads').select('*', { count: 'exact', head: true }),
-          supabase.from('tests').select('*', { count: 'exact', head: true }),
-          supabase.from('events').select('*', { count: 'exact', head: true }),
-          supabase.from('leads').select('*').order('created_at', { ascending: false }).limit(5)
-        ])
-
-        setStats({
-          users: usersCount || 0,
-          careers: careersCount || 0,
-          blogs: blogsCount || 0,
-          leads: leadsCount || 0,
-          tests: testsCount || 0,
-          events: eventsCount || 0
-        })
-
-        if (leadsData) {
-          setRecentLeads(leadsData)
-        }
+        const { stats: s, recentLeads: leads } = await fetchAdminStats()
+        setStats(s)
+        setRecentLeads(leads)
       } catch (error) {
-        console.error('Error fetching admin stats:', error)
+        if (process.env.NODE_ENV === 'development') console.error('Error fetching admin stats:', error)
       } finally {
         setLoading(false)
       }
     }
 
-    fetchStats()
-  }, [supabase])
+    load()
+  }, [])
 
   const statCards = [
     { title: 'Total Students', value: stats.users, icon: Users, color: 'bg-blue-500' },

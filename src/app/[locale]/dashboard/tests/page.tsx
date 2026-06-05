@@ -18,58 +18,6 @@ export default function TestsPage() {
   const [attempts, setAttempts] = useState<Record<string, any>>({})
   const [activeTab, setActiveTab] = useState<'all' | 'free' | 'premium'>('all')
 
-  // Mock Fallback Tests
-  const mockTests = [
-    {
-      id: 'test-upsc-1',
-      title: 'UPSC Civil Services - General Studies (Mock 1)',
-      description: 'Comprehensive practice covering Indian Polity, History, Economy, Geography, and Current Affairs.',
-      duration: 60, // minutes
-      total_marks: 100,
-      negative_marking: '0.33',
-      category: 'upsc',
-      difficulty: 'hard',
-      is_premium: false,
-      questions_count: 50,
-    },
-    {
-      id: 'test-ssc-1',
-      title: 'SSC CGL - Quantitative Aptitude (Algebra & Geometry)',
-      description: 'Practice questions on Core Algebra, Geometry, Trigonometry, and Mensuration designed for Group B posts.',
-      duration: 30,
-      total_marks: 50,
-      negative_marking: '0.50',
-      category: 'ssc',
-      difficulty: 'medium',
-      is_premium: false,
-      questions_count: 25,
-    },
-    {
-      id: 'test-banking-1',
-      title: 'SBI PO - Reasoning Ability Practice Hub',
-      description: 'High-level Syllogisms, Seating Arrangements, Coding-Decoding, and Blood Relations questions.',
-      duration: 45,
-      total_marks: 80,
-      negative_marking: '0.25',
-      category: 'banking',
-      difficulty: 'medium',
-      is_premium: true,
-      questions_count: 40,
-    },
-    {
-      id: 'test-econ-1',
-      title: 'Entrepreneurship & Basic Economic Literacy',
-      description: 'Essential check for micro-business operations, cashflow concepts, legal constructs, and tax rules.',
-      duration: 20,
-      total_marks: 40,
-      negative_marking: '0.00',
-      category: 'economics',
-      difficulty: 'easy',
-      is_premium: true,
-      questions_count: 20,
-    },
-  ]
-
   useEffect(() => {
     const fetchTests = async () => {
       try {
@@ -104,27 +52,22 @@ export default function TestsPage() {
 
         setAttempts(attemptsMap)
 
-        if (dbTests && dbTests.length > 0) {
-          // Count questions for each test
-          const testsWithCounts = await Promise.all(
-            dbTests.map(async (test) => {
-              const { count } = await supabase
-                .from('test_questions')
-                .select('*', { count: 'exact', head: true })
-                .eq('test_id', test.id)
-              return {
-                ...test,
-                questions_count: count || 0,
-              }
-            })
-          )
-          setTests(testsWithCounts)
-        } else {
-          setTests(mockTests)
-        }
+        const testsWithCounts = await Promise.all(
+          (dbTests || []).map(async (test) => {
+            const { count } = await supabase
+              .from('test_questions')
+              .select('*', { count: 'exact', head: true })
+              .eq('test_id', test.id)
+            return {
+              ...test,
+              questions_count: count || 0,
+            }
+          })
+        )
+        setTests(testsWithCounts)
       } catch (err) {
-        console.error('Error fetching tests:', err)
-        setTests(mockTests)
+        if (process.env.NODE_ENV === 'development') console.error('Error fetching tests:', err)
+        setTests([])
       } finally {
         setLoading(false)
       }
@@ -221,7 +164,9 @@ export default function TestsPage() {
         <div className="text-center py-12 bg-white rounded-2xl border border-slate-200">
           <ClipboardList className="w-12 h-12 text-slate-300 mx-auto mb-3" />
           <h3 className="font-heading font-bold text-slate-700 text-lg">No Tests Found</h3>
-          <p className="text-slate-400 text-sm mt-1">There are no practice tests matching your filters currently.</p>
+          <p className="text-slate-400 text-sm mt-1">
+            Run <code className="text-xs bg-slate-100 px-1 rounded">seed.sql</code> in Supabase if this is a fresh database, or ask admin to publish tests.
+          </p>
         </div>
       ) : (
         <motion.div

@@ -161,5 +161,76 @@ FROM (VALUES
 ) AS q(question, options, weight, sort_order);
 
 -- ============================================================
+-- BLOGS, ANNOUNCEMENTS, EVENTS
+-- ============================================================
+
+INSERT INTO blog_categories (name, slug, description) VALUES
+  ('Career Tips', 'career-tips', 'Guidance for exam prep and career planning'),
+  ('Wealth & Health', 'wealth-health', 'Economic literacy and wellbeing')
+ON CONFLICT (slug) DO NOTHING;
+
+INSERT INTO blogs (title, slug, excerpt, content_md, published, published_at, category_id, reading_time, seo_title, seo_description)
+SELECT
+  title, slug, excerpt, content_md, true, NOW(),
+  (SELECT id FROM blog_categories WHERE slug = category_slug LIMIT 1),
+  reading_time, seo_title, seo_description
+FROM (VALUES
+  (
+    'How to Manage Exam Prep Stress',
+    'manage-prep-stress',
+    'Expert tips on mental health, scheduling, and consistent planning for competitive exams.',
+    '## Stay Consistent\n\nBuild a daily routine with fixed study blocks and recovery time.\n\n## Wealth is Health\n\nProtect sleep and nutrition — they compound your exam performance.',
+    'career-tips',
+    4,
+    'Manage Exam Prep Stress | Ramanujonomics',
+    'Practical stress management for UPSC, SSC, and banking aspirants.'
+  ),
+  (
+    'Understanding Government vs Private Careers',
+    'government-vs-private-careers',
+    'A balanced comparison to help students choose the right path.',
+    '## Government Paths\n\nStability, structured exams, and public service impact.\n\n## Private Paths\n\nFaster growth, corporate meritocracy, and global mobility.',
+    'career-tips',
+    5,
+    'Government vs Private Careers | Ramanujonomics',
+    'Compare government and private career trade-offs in India.'
+  )
+) AS b(title, slug, excerpt, content_md, category_slug, reading_time, seo_title, seo_description)
+WHERE NOT EXISTS (SELECT 1 FROM blogs WHERE slug = b.slug);
+
+INSERT INTO announcements (title, content, priority, is_active, is_banner)
+SELECT title, content, priority::announcement_priority, true, false
+FROM (VALUES
+  ('Welcome to Ramanujonomics!', 'India''s career guidance platform is live. Explore careers, take free tests, and save roadmaps to your library.', 'high'),
+  ('Telugu language support', 'Switch to Telugu using the language menu for localized career content.', 'normal'),
+  ('New practice test available', 'General Aptitude Sample Test is now available in your dashboard.', 'normal')
+) AS a(title, content, priority)
+WHERE NOT EXISTS (SELECT 1 FROM announcements WHERE title = a.title);
+
+INSERT INTO events (title, slug, description, event_type, start_date, end_date, location, published, is_free)
+SELECT title, slug, description, event_type::event_type, start_date, end_date, location, true, true
+FROM (VALUES
+  (
+    'Strategies for APPSC/TSPSC Prep & Mind Mapping',
+    'appsc-tspsc-prep-webinar',
+    'Live webinar on state PSC preparation, syllabus mapping, and answer writing.',
+    'webinar',
+    (NOW() + INTERVAL '7 days'),
+    (NOW() + INTERVAL '7 days' + INTERVAL '2 hours'),
+    'Online — Hyderabad HQ'
+  ),
+  (
+    'UPSC Prelims Mock Test Strategy Session',
+    'upsc-prelims-strategy',
+    'Learn how to use full-length mocks and analyze negative marking patterns.',
+    'seminar',
+    (NOW() + INTERVAL '14 days'),
+    (NOW() + INTERVAL '14 days' + INTERVAL '90 minutes'),
+    'Ramanujonomics Virtual Classroom'
+  )
+) AS e(title, slug, description, event_type, start_date, end_date, location)
+WHERE NOT EXISTS (SELECT 1 FROM events WHERE slug = e.slug);
+
+-- ============================================================
 -- END OF SEED DATA
 -- ============================================================

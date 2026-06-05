@@ -6,6 +6,7 @@ import { FALLBACK_CAREERS } from '@/lib/fallback-data'
 import { FALLBACK_CAREER_DETAILS } from '@/lib/fallback-career-details'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import SaveToLibraryButton from '@/components/careers/SaveToLibraryButton'
 
 export const revalidate = 3600 // Cache for 1 hour
 
@@ -166,10 +167,11 @@ export default async function CareerDetailPage({ params }: PageProps) {
               </div>
               <div className="divider bg-white/10" />
               <div className="flex flex-col sm:flex-row lg:flex-col gap-2">
-                <button className="btn-cta w-full text-sm font-bold justify-center">
-                  <Bookmark className="w-4 h-4" />
-                  Save to My Library
-                </button>
+                <SaveToLibraryButton
+                  itemId={career.id}
+                  itemType="career"
+                  locale={locale}
+                />
                 <a
                   href="#enquiry-form"
                   className="btn-primary bg-white hover:bg-slate-100 text-imperial-blue w-full text-sm font-bold justify-center"

@@ -18,7 +18,7 @@ AS $$
     SELECT 1 FROM profiles
     WHERE id = uid
       AND is_premium = true
-      AND (premium_expires_at IS NULL OR premium_expires_at > NOW())
+      AND (premium_expires_at IS NULL OR premium_expires_at > NOW())  
   );
 $$;
 

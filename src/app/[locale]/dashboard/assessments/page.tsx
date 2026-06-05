@@ -33,6 +33,7 @@ export default function AssessmentPage() {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [selectedAnswers, setSelectedAnswers] = useState<Record<string, number>>({}) // 1 to 5 scale
   const [resultsData, setResultsData] = useState<any>(null)
+  const [assessmentId, setAssessmentId] = useState<string | null>(null)
 
   // 10 professionally framed psychometric career fitness questions
   const questions: AssessmentQuestion[] = [
@@ -87,6 +88,23 @@ export default function AssessmentPage() {
       scores: { govt: 5, private: 2, self: 0, startup: 0, economics: 0 }
     }
   ]
+
+  useEffect(() => {
+    const loadAssessment = async () => {
+      const { data } = await supabase
+        .from('assessments')
+        .select('id')
+        .eq('is_active', true)
+        .order('created_at', { ascending: true })
+        .limit(1)
+        .maybeSingle()
+      const row = data as { id: string } | null
+      if (row?.id) {
+        setAssessmentId(row.id)
+      }
+    }
+    loadAssessment()
+  }, [])
 
   const options = [
     { value: 1, label: 'Strongly Disagree' },
@@ -183,17 +201,21 @@ export default function AssessmentPage() {
 
     try {
       const { data: { user } } = await supabase.auth.getUser()
-      if (user) {
-        // Save to Supabase DB (ignore failure, fallback to state is fine)
-        await supabase.from('assessment_results').insert({
+      if (user && assessmentId) {
+        const { error } = await supabase.from('assessment_results').insert({
           user_id: user.id,
-          assessment_id: 'd8c234a9-467a-4712-ba22-0a1bf6f7bfd0', // Static default assessment ID
+          assessment_id: assessmentId,
           answers: selectedAnswers,
           result_json: resultObj,
-        } as any)
+        } as never)
+        if (error) {
+          toast.error('Could not save assessment results. Try again.')
+        } else {
+          toast.success('Assessment saved to your profile!')
+        }
       }
     } catch (err) {
-      console.error('Error storing results:', err)
+      if (process.env.NODE_ENV === 'development') console.error('Error storing results:', err)
     } finally {
       setLoading(false)
       setStep('results')
