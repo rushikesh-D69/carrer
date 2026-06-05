@@ -62,6 +62,9 @@ export default function LoginPage() {
       } else {
         toast.success(t('dashboard.welcome') || 'Welcome back!')
         
+        // Ensure local session is fully synced before querying
+        await supabase.auth.getSession()
+        
         let finalRedirectUrl = redirectUrl
         if (data.user) {
           const { data: roleData } = await supabase
@@ -75,8 +78,8 @@ export default function LoginPage() {
           }
         }
         
-        router.push(finalRedirectUrl)
-        router.refresh()
+        // Force a hard reload to ensure all Supabase clients re-initialize with the fresh cookie
+        window.location.href = finalRedirectUrl
       }
     } catch (err) {
       toast.error('An unexpected error occurred')
