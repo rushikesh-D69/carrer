@@ -23,24 +23,8 @@ export default function SignupPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [isSent, setIsSent] = useState(false)
 
-  const handleGoogleLogin = async () => {
-    setIsLoading(true)
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: `${window.location.origin}/auth/callback?next=/${locale}/dashboard`,
-        },
-      })
-      if (error) {
-        toast.error(error.message)
-      }
-    } catch (err) {
-      toast.error('An unexpected error occurred during Google sign-in')
-      if (process.env.NODE_ENV === 'development') console.error(err)
-    } finally {
-      setIsLoading(false)
-    }
+  const handleGoogleLogin = () => {
+    toast.info(t('auth.google_coming_soon'))
   }
 
   const handleSignup = async (e: React.FormEvent) => {
