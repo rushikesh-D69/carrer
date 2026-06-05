@@ -7,6 +7,7 @@ import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import MobileBottomNav from '@/components/layout/MobileBottomNav';
 import { Toaster } from '@/components/ui/sonner';
+import ContentProtection from '@/components/security/ContentProtection';
 import "@/app/globals.css";
 
 export const metadata: Metadata = {
@@ -74,8 +75,9 @@ export default async function LocaleLayout({ children, params }: Props) {
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
       </head>
-      <body className="has-bottom-nav font-body antialiased">
+      <body className="has-bottom-nav font-body antialiased content-protected">
         <NextIntlClientProvider messages={messages}>
+          <ContentProtection />
           {/* Announcement Banner placeholder — rendered from DB */}
           <Navbar />
           <main id="main-content">

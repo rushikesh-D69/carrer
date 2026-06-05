@@ -3,6 +3,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { contactLeadSchema, type ContactLeadInput } from '@/lib/validations'
 import { logError } from '@/lib/logger'
+import { enforceFormSecurity } from '@/app/actions/security'
 import type { Lead } from '@/types/database'
 
 type LeadInsert = Omit<Lead, 'id' | 'created_at' | 'updated_at' | 'assigned_to' | 'notes'> & {
@@ -24,6 +25,11 @@ export async function submitContactLead(
 
   if (parsed.data.honeypot) {
     return { success: true }
+  }
+
+  const security = await enforceFormSecurity('contact', parsed.data.turnstileToken)
+  if (!security.ok) {
+    return { success: false, error: security.error }
   }
 
   try {

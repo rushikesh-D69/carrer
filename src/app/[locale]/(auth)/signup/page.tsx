@@ -8,6 +8,8 @@ import { createClient } from '@/lib/supabase/client'
 import { Eye, EyeOff, KeyRound, Mail, User, ArrowRight } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { toast } from 'sonner'
+import { enforceFormSecurity } from '@/app/actions/security'
+import TurnstileWidget from '@/components/security/TurnstileWidget'
 
 export default function SignupPage() {
   const t = useTranslations()
@@ -22,6 +24,7 @@ export default function SignupPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [isSent, setIsSent] = useState(false)
+  const [turnstileToken, setTurnstileToken] = useState<string | undefined>()
 
   const handleGoogleLogin = () => {
     toast.info(t('auth.google_coming_soon'))
@@ -51,6 +54,12 @@ export default function SignupPage() {
 
     setIsLoading(true)
     try {
+      const security = await enforceFormSecurity('signup', turnstileToken)
+      if (!security.ok) {
+        toast.error(security.error)
+        return
+      }
+
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -219,6 +228,12 @@ export default function SignupPage() {
                 />
               </div>
             </div>
+
+            <TurnstileWidget
+              onVerify={setTurnstileToken}
+              onExpire={() => setTurnstileToken(undefined)}
+              className="flex justify-center mt-4"
+            />
 
             <button
               type="submit"

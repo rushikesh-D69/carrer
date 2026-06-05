@@ -9,6 +9,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Clock, AlertTriangle, ArrowRight, ArrowLeft, Send, CheckCircle2, ChevronRight, Check } from 'lucide-react'
 import { toast } from 'sonner'
 import { logError } from '@/lib/logger'
+import UserWatermark from '@/components/security/UserWatermark'
 
 interface Question {
   id: string
@@ -407,7 +408,8 @@ export default function TestEnginePage() {
   const currentQuestion = questions[currentIndex]
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col justify-between">
+    <div className="min-h-screen bg-slate-50 flex flex-col justify-between relative">
+      <UserWatermark />
       {/* Header Info Panel */}
       <header className="bg-white border-b border-slate-200 px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between gap-3 sticky top-16 z-20">
         <div className="min-w-0 flex-1">

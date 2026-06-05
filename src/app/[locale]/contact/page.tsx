@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl'
 import { Mail, Phone, MapPin, Send, MessageSquare, User, AlertCircle, CheckCircle2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { submitContactLead } from '@/app/actions/contact'
+import TurnstileWidget from '@/components/security/TurnstileWidget'
 
 interface PageProps {
   params: Promise<{ locale: string }>
@@ -16,6 +17,7 @@ export default function ContactPage({ params }: PageProps) {
 
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
+  const [turnstileToken, setTurnstileToken] = useState<string | undefined>()
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -44,6 +46,7 @@ export default function ContactPage({ params }: PageProps) {
         career_interest: formData.career_interest,
         message: formData.message,
         honeypot: formData.website,
+        turnstileToken,
       })
 
       if (!result.success) {
@@ -275,6 +278,12 @@ export default function ContactPage({ params }: PageProps) {
                     required
                   />
                 </div>
+
+                <TurnstileWidget
+                  onVerify={setTurnstileToken}
+                  onExpire={() => setTurnstileToken(undefined)}
+                  className="flex justify-center"
+                />
 
                 <button
                   type="submit"

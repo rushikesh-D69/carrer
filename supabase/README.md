@@ -19,14 +19,18 @@ Run these **in order** in the Supabase SQL Editor (or via CLI migrations).
 
 ## After migration
 
-1. **Authentication → Providers** — enable Email (and Google if used).
-2. **Authentication → URL configuration** — add Vercel URL and custom domain to redirect allow-list.
-3. Create admin user in Authentication, then:
+1. **Authentication → Providers** — enable Email (and Google when ready).
+2. **Authentication → Attack Protection** — enable rate limits and bot detection (Supabase dashboard).
+3. **Authentication → URL configuration** — add Vercel URL and custom domain to redirect allow-list.
+4. Create admin user in Authentication, then promote to **super_admin**:
 
 ```sql
 INSERT INTO user_roles (user_id, role)
-VALUES ('<auth-user-uuid>', 'admin');
+VALUES ('3ea5ec61-4087-4b22-be69-b2b0ceed8c69', 'super_admin')
+ON CONFLICT (user_id) DO UPDATE SET role = 'super_admin';
 ```
+
+Replace the UUID with your auth user ID from **Authentication → Users**.
 
 ## Keys (Settings → API)
 

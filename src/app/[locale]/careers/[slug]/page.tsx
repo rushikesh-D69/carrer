@@ -7,6 +7,7 @@ import { FALLBACK_CAREER_DETAILS } from '@/lib/fallback-career-details'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import SaveToLibraryButton from '@/components/careers/SaveToLibraryButton'
+import UserWatermark from '@/components/security/UserWatermark'
 
 export const revalidate = 3600 // Cache for 1 hour
 
@@ -102,7 +103,8 @@ export default async function CareerDetailPage({ params }: PageProps) {
   const localePath = (path: string) => `/${locale}${path}`
 
   return (
-    <div className="bg-slate-50 min-h-screen pb-16">
+    <div className="bg-slate-50 min-h-screen pb-16 relative">
+      <UserWatermark />
       {/* Premium Course-Style Header */}
       <header className="bg-imperial-blue text-white py-12 md:py-16 relative overflow-hidden">
         {/* Background Patterns */}

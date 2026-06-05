@@ -8,6 +8,8 @@ import { createClient } from '@/lib/supabase/client'
 import { Eye, EyeOff, KeyRound, Mail, ArrowRight } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { toast } from 'sonner'
+import { enforceFormSecurity } from '@/app/actions/security'
+import TurnstileWidget from '@/components/security/TurnstileWidget'
 
 export default function LoginPage() {
   const t = useTranslations()
@@ -20,6 +22,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [turnstileToken, setTurnstileToken] = useState<string | undefined>()
 
   const redirectUrl = searchParams.get('redirect') || `/${locale}/dashboard`
   
@@ -36,6 +39,12 @@ export default function LoginPage() {
 
     setIsLoading(true)
     try {
+      const security = await enforceFormSecurity('login', turnstileToken)
+      if (!security.ok) {
+        toast.error(security.error)
+        return
+      }
+
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -148,6 +157,12 @@ export default function LoginPage() {
                 </button>
               </div>
             </div>
+
+            <TurnstileWidget
+              onVerify={setTurnstileToken}
+              onExpire={() => setTurnstileToken(undefined)}
+              className="flex justify-center"
+            />
 
             <button
               type="submit"

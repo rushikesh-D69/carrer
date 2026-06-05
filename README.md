@@ -9,6 +9,9 @@ Career guidance platform — Next.js frontend + [Supabase](https://supabase.com)
 - **Never commit** `.env.local` or real API keys. Only `.env.example` (placeholders) is in git.
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY` is meant for the browser; protect data with **Row Level Security** (see `supabase/migrations/001_schema.sql`).
 - `SUPABASE_SERVICE_ROLE_KEY` bypasses RLS — set only in Vercel/host secrets, never `NEXT_PUBLIC_`.
+- **Rate limits** — set `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` (Upstash Redis) on contact, login, signup.
+- **Bot protection** — set Cloudflare Turnstile keys (`NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`).
+- **Supabase Attack Protection** — enable in dashboard under Authentication → Attack Protection.
 
 ## Local development
 

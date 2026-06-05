@@ -113,6 +113,20 @@
     overflow-x: hidden;
   }
 
+  body.content-protected #main-content {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+  }
+
+  body.content-protected #main-content input,
+  body.content-protected #main-content textarea,
+  body.content-protected #main-content select,
+  body.content-protected #main-content [contenteditable="true"] {
+    -webkit-user-select: text;
+    user-select: text;
+  }
+
   /* Telugu language typography override */
   :lang(te) {
     font-family: 'Noto Sans Telugu', var(--font-body);
@@ -270,33 +284,49 @@
     -moz-user-select: none;
   }
 
-  /* Watermark */
+  /* Watermark — tiled overlay for logged-in users on protected content */
   .watermark-layer {
     position: fixed;
     inset: 0;
     pointer-events: none;
-    z-index: 50;
+    z-index: 40;
     overflow: hidden;
   }
 
-  .watermark-layer::before {
-    content: attr(data-watermark);
+  .watermark-grid {
     position: absolute;
-    inset: -50%;
-    width: 200%;
-    height: 200%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    font-weight: 500;
-    color: rgb(0 41 107 / 0.06);
-    transform: rotate(-35deg);
-    word-spacing: 2rem;
-    line-height: 4rem;
-    letter-spacing: 0.05em;
-    white-space: pre-wrap;
-    pointer-events: none;
+    top: -25%;
+    left: -25%;
+    width: 150%;
+    height: 150%;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 4rem 2rem;
+    transform: rotate(-32deg);
+    align-content: center;
+    justify-items: center;
+  }
+
+  .watermark-tile {
+    font-size: 11px;
+    font-weight: 600;
+    font-family: var(--font-body);
+    color: rgb(0 41 107 / 0.07);
+    letter-spacing: 0.03em;
+    white-space: nowrap;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  @media (min-width: 640px) {
+    .watermark-grid {
+      grid-template-columns: repeat(5, 1fr);
+      gap: 5rem 3rem;
+    }
+
+    .watermark-tile {
+      font-size: 12px;
+    }
   }
 
   /* Buttons */
