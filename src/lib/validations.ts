@@ -7,6 +7,7 @@ export const contactLeadSchema = z.object({
   career_interest: z.string().trim().max(120).optional().or(z.literal('')),
   message: z.string().trim().min(10).max(5000),
   honeypot: z.string().optional(),
+  turnstileToken: z.string().optional(),
 })
 
 export const signupSchema = z
