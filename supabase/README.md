@@ -7,7 +7,7 @@ Run these **in order** in the Supabase SQL Editor (or via CLI migrations).
 | Step | File | Purpose |
 |------|------|---------|
 | 1 | `migrations/001_schema.sql` | Tables, enums, RLS, base indexes |
-| 2 | `migrations/002_production_hardening.sql` | Triggers, RPC grading, tighter RLS, more indexes |
+| 2 | `migrations/002_production_hardening.sql` | Triggers, RPC grading, tighter RLS, more indexes (**safe to re-run**) |
 | 3 | `seed.sql` | Sample careers, tests, settings |
 
 ## Production functions (002)

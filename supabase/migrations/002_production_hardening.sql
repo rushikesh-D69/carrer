@@ -1,5 +1,6 @@
 -- ============================================================
 -- RAMANUJONOMICS — Production hardening (run after 001_schema.sql)
+-- Safe to re-run: uses IF NOT EXISTS / DROP IF EXISTS before CREATE
 -- ============================================================
 
 -- Section type used by UI (feedback tab)
@@ -234,6 +235,7 @@ CREATE POLICY "Anyone can read assessment questions" ON assessment_questions
 
 -- Public media for marketing pages
 DROP POLICY IF EXISTS "Authenticated users can view media" ON media;
+DROP POLICY IF EXISTS "Anyone can read media" ON media;
 CREATE POLICY "Anyone can read media" ON media
   FOR SELECT USING (true);
 
@@ -264,6 +266,9 @@ CREATE POLICY "Anyone can subscribe" ON newsletter_subscribers
 
 -- Test attempts: users cannot forge scores via direct insert
 DROP POLICY IF EXISTS "Users can manage own attempts" ON test_attempts;
+DROP POLICY IF EXISTS "Users select own attempts" ON test_attempts;
+DROP POLICY IF EXISTS "Users insert in_progress attempts" ON test_attempts;
+DROP POLICY IF EXISTS "Users update own in_progress attempts" ON test_attempts;
 CREATE POLICY "Users select own attempts" ON test_attempts
   FOR SELECT USING (user_id = auth.uid());
 CREATE POLICY "Users insert in_progress attempts" ON test_attempts
@@ -288,3 +293,10 @@ CREATE INDEX IF NOT EXISTS idx_career_translations_career_locale ON career_trans
 CREATE INDEX IF NOT EXISTS idx_blog_translations_blog_locale ON blog_translations(blog_id, locale);
 CREATE INDEX IF NOT EXISTS idx_payments_user_id ON payments(user_id);
 CREATE INDEX IF NOT EXISTS idx_subscriptions_user_id ON subscriptions(user_id);
+
+-- ============================================================
+-- After successful run, verify in Supabase SQL Editor:
+-- SELECT proname FROM pg_proc WHERE proname IN ('get_test_questions','submit_test_attempt','handle_new_user');
+-- SELECT policyname FROM pg_policies WHERE tablename IN ('media','test_attempts','leads');
+-- Then run seed.sql if not already applied.
+-- ============================================================
