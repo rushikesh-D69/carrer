@@ -52,9 +52,20 @@ CREATE TRIGGER on_auth_user_created
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 
 -- Locale constraints
-ALTER TABLE profiles
-  ADD CONSTRAINT profiles_preferred_locale_check
-  CHECK (preferred_locale IN ('en', 'te'));
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+    FROM pg_constraint
+    WHERE conname = 'profiles_preferred_locale_check'
+      AND conrelid = 'public.profiles'::regclass
+  ) THEN
+    ALTER TABLE public.profiles
+      ADD CONSTRAINT profiles_preferred_locale_check
+      CHECK (preferred_locale IN ('en', 'te'));
+  END IF;
+END
+$$;
 
 -- Test questions for clients (no correct_answer exposed)
 CREATE OR REPLACE FUNCTION public.get_test_questions(p_test_id UUID)
